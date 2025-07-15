@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online C++ Compiler</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Online C++ Compiler</h1>
+        <form id="compileForm">
+            <textarea name="code" id="code" placeholder="Enter your C++ code here..." rows="15">#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int number;
+    cout << "Enter a number: ";
+    cin >> number;
+    cout << "You entered: " << number << endl;
+    return 0;
+}</textarea>
+            
+            <div class="input-section">
+                <h3>Input:</h3>
+                <textarea name="input" id="input" placeholder="Enter program input here..." rows="3"></textarea>
+            </div>
+            
+            <button type="submit">Compile & Run</button>
+        </form>
+        <div class="output">
+            <h3>Output:</h3>
+            <pre id="output"></pre>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('compileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const outputElement = document.getElementById('output');
+            outputElement.textContent = 'Compiling and running...';
+            
+            fetch('/compile', {
+                method: 'POST',
+                body: new FormData(this)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    outputElement.textContent = `Error: ${data.error}\n${data.output || ''}`;
+                } else {
+                    outputElement.textContent = data.output || 'No output';
+                }
+            })
+            .catch(error => {
+                outputElement.textContent = `Error: ${error}`;
+            });
+        });
+    </script>
+</body>
+</html>
